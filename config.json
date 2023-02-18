@@ -1,0 +1,7 @@
+{
+   "active": true,
+   "transferFile": "/home/pi/speedtest/speedtest.json",
+   "usbFile": "/media/usbstick/speedtest-all.csv",
+   "jsonFile": "/media/usbstick/speedtest-all.json",
+   "cmd":"/usr/bin/speedtest --accept-license --accept-gdpr"
+}
