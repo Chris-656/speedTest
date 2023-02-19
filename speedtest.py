@@ -4,8 +4,14 @@ import subprocess
 import time
 import json
 import sys, getopt
+import requests
 
-wifi=""
+def getWifiName():
+    output = subprocess.check_output(['sudo', 'iwgetid']).decode()
+    global wifi
+    wifi=output.split('"')[1]
+    if (wifi == ""):
+        wifi="LAN"
 
 def getConfig(configFile):
     if (not os.path.isfile(configFile)):
@@ -16,8 +22,13 @@ def getConfig(configFile):
     config = json.load(f)
     return config
 
+def postRequestAPI(config,data):
+    if (config["apiCmd"]):
+        url = config["apiCmd"].format(wifi=wifi,down=data["download"],up=data["upload"])
+        x = requests.get(url)
+
+
 def writeJson(config,data):
-    wifi = str(subprocess.check_output(['iwgetid -r'], shell=True)).split('\'')[1][:-2]
 
     with open(config["jsonFile"],'r+') as fr:
         try:
@@ -36,14 +47,7 @@ def writeTransferFile(config, data):
     with open(config["transferFile"],'w') as file:
         json.dump(data, file)
 
-# def writeUsbFile(config, data):
-#     f = open(config["usbFile"], 'a+')
-#     f.write('{},{},{},{},{},{}\r\n'.format(time.strftime('%d.%m.%y'), time.strftime('%H:%M'), data["ping"], data["jitter"], data["download"], data["upload"]))
-#     f.close()
-
 def extractSpeedData(response):
-
-
     speedData = {
         "ping":re.search('Latency:\s+(.*?)\s', response, re.MULTILINE).group(1),
         "download":re.search('Download:\s+(.*?)\s', response, re.MULTILINE).group(1),
@@ -68,7 +72,8 @@ def main(argv):
     else:
         configFile = os.path.dirname(__file__)+"/config.json"
 
-    wifi = str(subprocess.check_output(['iwgetid -r'], shell=True)).split('\'')[1][:-2]
+    getWifiName()
+
     config = getConfig(configFile)
 
     print('get Config \r\n active:{}\r\n file:{}\r\n'.format(config["active"],config["transferFile"]))
@@ -80,8 +85,10 @@ def main(argv):
     response = subprocess.Popen(config["cmd"], shell=True, stdout=subprocess.PIPE).stdout.read().decode('utf-8')
     data = extractSpeedData(response)
 
-    writeJson(config,data)
+    print("writing results")
+    postRequestAPI(config,data)
     writeTransferFile(config, data)
+    writeJson(config,data)
 
 if __name__ == "__main__":
    main(sys.argv[1:])
