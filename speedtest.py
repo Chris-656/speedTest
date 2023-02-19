@@ -36,7 +36,11 @@ def writeTransferFile(config, data):
 #     f.close()
 
 def extractSpeedData(response):
+
+    wifi =str(subprocess.check_output(['iwgetid -r'], shell=True)).split('\'')[1][:-2]
+
     speedData = {
+        "ssid":wifi,
         "ping":re.search('Latency:\s+(.*?)\s', response, re.MULTILINE).group(1),
         "download":re.search('Download:\s+(.*?)\s', response, re.MULTILINE).group(1),
         "upload":re.search('Upload:\s+(.*?)\s', response, re.MULTILINE).group(1),
@@ -59,6 +63,7 @@ def main(argv):
                 configFile = arg
     else:
         configFile = os.path.dirname(__file__)+"/config.json"
+
 
     config = getConfig(configFile)
 
