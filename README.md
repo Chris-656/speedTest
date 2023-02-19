@@ -22,7 +22,7 @@ adapt the config.json to your needs
 {
    "active": true,                                              // is executed to the crontab, false no
    "transferFile": "/home/pi/speedtest/speedtest.json",         // is used for transfer only last record
-   "jsonFile": "/home/pi/speedtest/speedtest-all.json",            // all results in one json file
+   "jsonFile": "/home/pi/speedtest/speedtest-all.json",         // all results in one json file
    "cmd":"/usr/bin/speedtest --accept-license --accept-gdpr"    // cmd for speedtest
 }
 ```
