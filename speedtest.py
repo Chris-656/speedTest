@@ -62,7 +62,7 @@ def main(argv):
     print (configFile)
     config = getConfig(configFile)
 
-    print('get Config \r\n active:{}\r\n file:{}\r\n usb:{}\r\n'.format(config["active"],config["transferFile"],config["usbFile"]))
+    print('get Config \r\n active:{}\r\n file:{}\r\n'.format(config["active"],config["transferFile"]))
     if (not config["active"]):
         print("active is set to false Do nothing")
         sys.exit(0)
