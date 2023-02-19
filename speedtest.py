@@ -59,7 +59,7 @@ def main(argv):
                 configFile = arg
     else:
         configFile = os.path.dirname(__file__)+"/config.json"
-    print (configFile)
+
     config = getConfig(configFile)
 
     print('get Config \r\n active:{}\r\n file:{}\r\n'.format(config["active"],config["transferFile"]))
