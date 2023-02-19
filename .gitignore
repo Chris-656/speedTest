@@ -1,0 +1,4 @@
+# No dot-directories except github/vscode
+.*/
+!.vscode/
+!.github/
