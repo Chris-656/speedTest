@@ -8,7 +8,7 @@ import sys, getopt
 def getConfig(configFile):
     if (not os.path.isfile(configFile)):
         f = open(configFile,"w")
-        f.write('{"active":true,"path":"test","speedResultFile":"~/speedtest/speedtest.csv","usbFile":"/media/usbstick/speedtest-all.csv"}')
+        f.write('{"active":true,"speedResultFile":"~/speedtest/speedtest.csv","usbFile":"/media/usbstick/speedtest-all.csv"}')
 
     f = open(configFile)
     config = json.load(f)
@@ -29,13 +29,11 @@ def writeJson(config,data):
 def writeTransferFile(config, data):
     with open(config["transferFile"],'w') as file:
         json.dump(data, file)
-        # file.write('{},{},{},{}\r\n'.format(time.strftime('%d.%m.%y'), time.strftime('%H:%M'), data["download"], data["upload"]))
-        # file.close()
 
-def writeUsbFile(config, data):
-    f = open(config["usbFile"], 'a+')
-    f.write('{},{},{},{},{},{}\r\n'.format(time.strftime('%d.%m.%y'), time.strftime('%H:%M'), data["ping"], data["jitter"], data["download"], data["upload"]))
-    f.close()
+# def writeUsbFile(config, data):
+#     f = open(config["usbFile"], 'a+')
+#     f.write('{},{},{},{},{},{}\r\n'.format(time.strftime('%d.%m.%y'), time.strftime('%H:%M'), data["ping"], data["jitter"], data["download"], data["upload"]))
+#     f.close()
 
 def extractSpeedData(response):
     speedData = {
@@ -75,7 +73,6 @@ def main(argv):
 
     writeJson(config,data)
     writeTransferFile(config, data)
-#writeUsbFile(config, data)
 
 if __name__ == "__main__":
    main(sys.argv[1:])
