@@ -5,6 +5,8 @@ import time
 import json
 import sys, getopt
 
+wifi=""
+
 def getConfig(configFile):
     if (not os.path.isfile(configFile)):
         f = open(configFile,"w")
@@ -15,14 +17,18 @@ def getConfig(configFile):
     return config
 
 def writeJson(config,data):
+    wifi = str(subprocess.check_output(['iwgetid -r'], shell=True)).split('\'')[1][:-2]
+
     with open(config["jsonFile"],'r+') as fr:
         try:
             file_data = json.load(fr)
         except:
-            file_data = {"speedData":[]}
+            file_data = {wifi:[]}
 
     with open(config["jsonFile"],'w') as fw:
-        file_data["speedData"].append(data)
+        if wifi not in file_data:
+            file_data[wifi] = []
+        file_data[wifi].append(data)
         #file.seek(0)
         json.dump(file_data, fw)
 
@@ -37,10 +43,8 @@ def writeTransferFile(config, data):
 
 def extractSpeedData(response):
 
-    wifi =str(subprocess.check_output(['iwgetid -r'], shell=True)).split('\'')[1][:-2]
 
     speedData = {
-        "ssid":wifi,
         "ping":re.search('Latency:\s+(.*?)\s', response, re.MULTILINE).group(1),
         "download":re.search('Download:\s+(.*?)\s', response, re.MULTILINE).group(1),
         "upload":re.search('Upload:\s+(.*?)\s', response, re.MULTILINE).group(1),
@@ -64,7 +68,7 @@ def main(argv):
     else:
         configFile = os.path.dirname(__file__)+"/config.json"
 
-
+    wifi = str(subprocess.check_output(['iwgetid -r'], shell=True)).split('\'')[1][:-2]
     config = getConfig(configFile)
 
     print('get Config \r\n active:{}\r\n file:{}\r\n'.format(config["active"],config["transferFile"]))
