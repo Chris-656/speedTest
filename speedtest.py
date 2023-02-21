@@ -4,38 +4,59 @@ import subprocess
 import time
 import json
 import sys, getopt
+import requests
+
+
+def getLANInfo():
+
+    regexLan = ' dev (\w+).*src (\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'
+    output = subprocess.check_output(['ip', 'r']).decode()
+    lan = re.search(regexLan, output, re.MULTILINE).group(1)
+    ip = re.search(regexLan, output, re.MULTILINE).group(2)
+    lanName = ""
+    if (lan.startswith("wlan")):
+        output = subprocess.check_output(['sudo', 'iwgetid']).decode()
+        lanName = output.split('"')[1]
+    elif(lan.startswith("eth")):
+        lanName = "{lan}-{ip}".format(lan=lan,ip=ip)
+
+    return lanName
 
 def getConfig(configFile):
     if (not os.path.isfile(configFile)):
         f = open(configFile,"w")
-        f.write('{"active":true,"path":"test","speedResultFile":"~/speedtest/speedtest.csv","usbFile":"/media/usbstick/speedtest-all.csv"}')
+        f.write('{"active":true,"speedResultFile":"~/speedtest/speedtest.csv","usbFile":"/media/usbstick/speedtest-all.csv"}')
 
     f = open(configFile)
     config = json.load(f)
+    txtLan = "".format
+    config["lan"]= getLANInfo()
     return config
 
+def postRequestAPI(config,data):
+    if (config["apiCmd"]):
+        url = config["apiCmd"].format(lan=config["lan"],down=data["download"],up=data["upload"])
+        x = requests.get(url)
+
+
 def writeJson(config,data):
+
     with open(config["jsonFile"],'r+') as fr:
         try:
             file_data = json.load(fr)
         except:
-            file_data = {"speedData":[]}
+            file_data = {"wifi":[]}
 
     with open(config["jsonFile"],'w') as fw:
-        file_data["speedData"].append(data)
+        if config["lan"] not in file_data:
+            file_data[config["lan"]] = []
+        file_data[config["lan"]].append(data)
         #file.seek(0)
         json.dump(file_data, fw)
 
 def writeTransferFile(config, data):
     with open(config["transferFile"],'w') as file:
         json.dump(data, file)
-        # file.write('{},{},{},{}\r\n'.format(time.strftime('%d.%m.%y'), time.strftime('%H:%M'), data["download"], data["upload"]))
-        # file.close()
-
-def writeUsbFile(config, data):
-    f = open(config["usbFile"], 'a+')
-    f.write('{},{},{},{},{},{}\r\n'.format(time.strftime('%d.%m.%y'), time.strftime('%H:%M'), data["ping"], data["jitter"], data["download"], data["upload"]))
-    f.close()
 
 def extractSpeedData(response):
     speedData = {
@@ -61,10 +82,11 @@ def main(argv):
                 configFile = arg
     else:
         configFile = os.path.dirname(__file__)+"/config.json"
-    print (configFile)
+
+
     config = getConfig(configFile)
 
-    print('get Config \r\n active:{}\r\n file:{}\r\n usb:{}\r\n'.format(config["active"],config["transferFile"],config["usbFile"]))
+    print('get Config \r\n active:{}\r\n file:{}\r\n'.format(config["active"],config["transferFile"]))
     if (not config["active"]):
         print("active is set to false Do nothing")
         sys.exit(0)
@@ -73,9 +95,10 @@ def main(argv):
     response = subprocess.Popen(config["cmd"], shell=True, stdout=subprocess.PIPE).stdout.read().decode('utf-8')
     data = extractSpeedData(response)
 
-    writeJson(config,data)
+    print("writing results")
+    postRequestAPI(config,data)
     writeTransferFile(config, data)
-#writeUsbFile(config, data)
+    writeJson(config,data)
 
 if __name__ == "__main__":
    main(sys.argv[1:])

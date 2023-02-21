@@ -1,7 +1,7 @@
 {
    "active": true,
    "transferFile": "/home/pi/speedtest/speedtest.json",
-   "usbFile": "/media/usbstick/speedtest-all.csv",
    "jsonFile": "/media/usbstick/speedtest-all.json",
-   "cmd":"/usr/bin/speedtest --accept-license --accept-gdpr"
+   "cmd":"/usr/bin/speedtest --accept-license --accept-gdpr",
+   "apiCmd":"http://192.168.0.24:8087/setBulk?0_userdata.0.Ookla.{lan}.Download={down}&0_userdata.0.Ookla.MMC.Upload={up}"
 }
