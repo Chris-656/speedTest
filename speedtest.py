@@ -65,7 +65,8 @@ def extractSpeedData(response):
         "upload":re.search('Upload:\s+(.*?)\s', response, re.MULTILINE).group(1),
         "jitter":re.search('Latency:.*?jitter:\s+(.*?)ms', response, re.MULTILINE).group(1),
         "date":time.strftime('%d.%m.%y'),
-        "time": time.strftime('%H:%M')
+        "time": time.strftime('%H:%M'),
+        "ts":int(time.time()*1000)
         }
     return speedData
 
