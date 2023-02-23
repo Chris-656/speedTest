@@ -1,0 +1,6 @@
+get Config 
+ active:True
+ file:/home/pi/speedtest/speedtest.json
+
+getting speed data
+writing results
