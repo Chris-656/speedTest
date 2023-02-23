@@ -3,5 +3,5 @@
    "transferFile": "/home/pi/speedtest/speedtest.json",
    "jsonFile": "/media/usbstick/speedtest-all.json",
    "cmd":"/usr/bin/speedtest --accept-license --accept-gdpr",
-   "apiCmd":"http://192.168.0.24:8087/setBulk?0_userdata.0.Ookla.{lan}.Download={down}&0_userdata.0.Ookla.MMC.Upload={up}"
+   "apiCmd":"http://192.168.0.24:8087/setBulk?0_userdata.0.Ookla.{lan}.Download={down}&0_userdata.0.Ookla.{lan}.Upload={up}"
 }

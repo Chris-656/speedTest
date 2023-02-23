@@ -18,7 +18,7 @@ def getLANInfo():
         output = subprocess.check_output(['sudo', 'iwgetid']).decode()
         lanName = output.split('"')[1]
     elif(lan.startswith("eth")):
-        lanName = "{lan}-{ip}".format(lan=lan,ip=ip)
+        lanName = "LAN".format(lan=lan,ip=ip)
 
     return lanName
 
