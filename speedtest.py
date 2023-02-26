@@ -25,17 +25,17 @@ def getLANInfo():
 def getConfig(configFile):
     if (not os.path.isfile(configFile)):
         f = open(configFile,"w")
-        f.write('{"active":true,"speedResultFile":"~/speedtest/speedtest.csv","usbFile":"/media/usbstick/speedtest-all.csv"}')
+        f.write('{"active": true,"transferFile": "/home/pi/speedtest/speedtest.json","jsonFile": "/media/usbstick/speedtest-all.json","cmd":"/usr/bin/speedtest --accept-license --accept-gdpr","apiCmd":""')
 
     f = open(configFile)
     config = json.load(f)
-    txtLan = "".format
     config["lan"]= getLANInfo()
     return config
 
 def postRequestAPI(config,data):
     if (config["apiCmd"]):
-        url = config["apiCmd"].format(lan=config["lan"],down=data["download"],up=data["upload"])
+        # url = config["apiCmd"].format(lan=config["lan"],down=data["download"],up=data["upload"])
+        url = config["apiCmd"].format(lan="LAN",down=data["download"],up=data["upload"])
         x = requests.get(url)
 
 
